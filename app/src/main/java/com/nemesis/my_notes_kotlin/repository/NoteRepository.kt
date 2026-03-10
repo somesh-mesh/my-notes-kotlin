@@ -20,7 +20,7 @@ class NoteRepository(private val noteDao: NoteDao) {
         noteDao.delete(note)
     }
 
-    suspend fun searchNotes(query: String): LiveData<List<Note>> {
+      fun searchNotes(query: String): LiveData<List<Note>> {
         return noteDao.searchNotes("%$query%")
     }
 

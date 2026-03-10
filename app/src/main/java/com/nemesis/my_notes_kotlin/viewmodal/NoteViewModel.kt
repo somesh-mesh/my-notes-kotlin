@@ -2,6 +2,7 @@ package com.nemesis.my_notes_kotlin.viewmodal
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.nemesis.my_notes_kotlin.data.Note
@@ -30,7 +31,23 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun searchNotes(query: String): LiveData<List<Note>> = liveData {
-        emitSource(repository.searchNotes(query))
+    fun searchNotes(query: String): LiveData<List<Note>> {
+        return if (query.isEmpty()) {
+            repository.allNotes
+        } else {
+            repository.searchNotes(query)
+        }
     }
+}
+
+class NoteViewModelFactory(private val repository: NoteRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+
+        if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return NoteViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+
 }

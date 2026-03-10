@@ -1,12 +1,14 @@
 package com.nemesis.my_notes_kotlin.data
 
 import androidx.lifecycle.LiveData
+import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 
+@Dao
 interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(note: Note)
@@ -17,14 +19,12 @@ interface NoteDao {
     @Delete
     suspend fun delete(note: Note)
 
-    @Query("SELECT * FROM notes ORDER BY updatedAt DESC")
+    @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
     suspend fun getNoteById(id: Int): Note
 
     @Query("SELECT * FROM notes ORDER BY updatedAt DESC")
-     fun getAllNotes(): LiveData<List<Note>>
+    fun getAllNotes(): LiveData<List<Note>>
 
     @Query("SELECT * FROM notes WHERE title LIKE :query OR content LIKE :query ORDER BY updatedAt DESC")
-    suspend fun searchNotes(query: String): LiveData<List<Note>>
-
-
+    fun searchNotes(query: String): LiveData<List<Note>>
 }
